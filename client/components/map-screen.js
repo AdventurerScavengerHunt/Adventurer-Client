@@ -1,142 +1,161 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { StyleSheet, View, Dimensions, Button, Text, SafeAreaView } from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
-import * as Permissions from 'expo-permissions';
-import * as Location from 'expo-location';
-import { fetchAllHuntLocations } from '../store/huntLocations';
-
+import React, { Component } from "react"
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  Button,
+  Text,
+  SafeAreaView
+} from "react-native"
+import MapView, { Marker } from "react-native-maps"
+import * as Permissions from "expo-permissions"
+import * as Location from "expo-location"
+import { connect } from "react-redux"
+//------------------------------------------------------------------
+import { fetchAllHuntLocations } from "../store/huntLocations"
+//------------------------------------------------------------------
+const LATITUDE_DELTA = 0.0922
+const LONGITUDE_DELTA = 0.0421
+//------------------------------------------------------------------
 class MapScreen extends Component {
+  //------------------------------------------------------------------
   constructor() {
-    super();
+    super()
     this.state = {
-      userLatitude: 0,
-      userLongitude: 0,
+      latitude: 0,
+      longitude: 0,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+      level: 0
     }
   }
+  //------------------------------------------------------------------
   async componentDidMount() {
-    // this.props.fetchHuntLocations(this.props.user.id)
-    this.props.fetchHuntLocations(1)
+    //-------------------LOCATION-----------------------------------------------
 
     const { status } = await Permissions.askAsync(Permissions.LOCATION)
-    if (status === 'granted') {
-      const location = await Location.getCurrentPositionAsync({
-        enableHighAccuracy: true,
-      });
-      console.log("Location granted: ", location)
+    if (status === "granted") {
+      await Location.getCurrentPositionAsync({
+        enableHighAccuracy: true
+      })
     }
-
-    this.watchId = navigator.geolocation.watchPosition((position) => {
+    this.watchId = navigator.geolocation.watchPosition(
+      position => {
         this.setState({
-          userLatitude: position.coords.latitude,
-          userLongitude: position.coords.longitude
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
         })
-      }, (error) => {
-        console.log('error: ', error)
+      },
+      error => {
+        console.log("error: ", error)
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     )
+    //---------------------HUNTS---------------------------------------------
+    this.props.fetchHuntLocations(1) // Hardcoded User ID | Pending user state
   }
-
+  //------------------------------------------------------------------
+  handleFound(targetLat, targetLong) {
+    //Math to compare target and current coordinates
+    //MATH MATH MATH MATH MATH MATH
+    //Make sure not moving past number of levels
+    if (this.state.level < this.props.huntLocations.length - 1)
+      //Increment next level
+      this.setState({
+        level: this.state.level + 1
+      })
+  }
+  //------------------------------------------------------------------
   render() {
     let huntMarkers = this.props.huntLocations
-    let userLoc = { latitude: this.state.userLatitude, longitude: this.state.userLongitude }
+    let userLoc = {
+      latitude: this.state.latitude,
+      longitude: this.state.longitude
+    }
     return (
       <SafeAreaView style={styles.container}>
-        <View style={{flex: 1}}>
-          <MapView
-            style={styles.mapStyle}
-            region={{
-              latitude: this.state.latitude,
-              longitude: this.state.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421
-            }}
-          >
+        <View style={{ flex: 1 }}>
+          <MapView style={styles.mapStyle} region={this.state}>
             {/* Current user location marker */}
             <Marker coordinate={userLoc}>
               <View style={styles.userLocMarker} />
             </Marker>
-            {/* Database hunt location markers */}
-            {!huntMarkers
-              ? null
-              : huntMarkers.map(marker => {
-                  const coords = {
-                    latitude: parseFloat(marker.latitude),
-                    longitude: parseFloat(marker.longitude)
-                  };
-                  const metadata = `Marker ID: ${marker.id}`
-
-                  return (
-                    <Marker
-                      key={marker.id}
-                      coordinate={coords}
-                      title="{metadata}"
-                      description={metadata}
-                    >
-                      <View style={styles.huntLocMarker} />
-                    </Marker>
-                  );
-                })}
           </MapView>
         </View>
-        <View style={styles.testWindow}>
-          <Text>Hello, I'm currently located at latitude: {this.state.userLatitude} and longitude: {this.state.userLongitude}</Text>
-        </View>
-        <View style={styles.riddle}>
-          <Text></Text>
+        {/* Database hunt location markers */}
+        <View>
+          <Text>{huntMarkers[this.state.level].riddle}</Text>
+          <Text>
+            TARGET: {huntMarkers[this.state.level].latitude} :{" "}
+            {huntMarkers[this.state.level].longitude}
+          </Text>
+          <Text>
+            CURR: {this.state.latitude} : {this.state.longitude}
+          </Text>
+          <Button
+            title="FOUND"
+            onPress={() =>
+              this.handleFound(
+                huntMarkers[this.state.level].latitude,
+                huntMarkers[this.state.level].longitude
+              )
+            }
+          />
         </View>
       </SafeAreaView>
     )
   }
 }
-
+//------------------------------------------------------------------
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center"
   },
   mapStyle: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height
   },
   userLocMarker: {
-    backgroundColor: 'blue',
-    borderColor: 'lightblue',
+    backgroundColor: "blue",
+    borderColor: "lightblue",
     borderWidth: 2,
     padding: 3,
     borderRadius: 100
   },
   huntLocMarker: {
-    backgroundColor: 'red',
-    borderColor: 'pink',
+    backgroundColor: "red",
+    borderColor: "pink",
     borderWidth: 2,
     padding: 5,
     borderRadius: 50
   },
   testWindow: {
-    backgroundColor: 'gray',
-    position: 'absolute',
-    top: '10%'
+    backgroundColor: "gray",
+    position: "absolute",
+    top: "10%"
   },
   riddle: {
-    backgroundColor: 'gray',
-    position: 'absolute',
-    top: '90%'
+    backgroundColor: "gray",
+    position: "absolute",
+    top: "90%"
   }
 })
-
+//------------------------------------------------------------------
 const mapStateToProps = state => {
   return {
-    huntLocations: state.huntLocations,
-    user: state.user
+    huntLocations: state.huntLocations
   }
 }
+//------------------------------------------------------------------
 
 const mapDispatchToProps = dispatch => {
-  return { fetchHuntLocations: () => dispatch(fetchAllHuntLocations()) }
+  return {
+    fetchHuntLocations: userId => dispatch(fetchAllHuntLocations(userId))
+  }
 }
+//------------------------------------------------------------------
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapScreen)
