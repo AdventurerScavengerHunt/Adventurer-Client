@@ -15,14 +15,15 @@ class MapScreen extends Component {
     }
   }
   async componentDidMount() {
-    this.props.fetchHuntLocations();
+    // this.props.fetchHuntLocations(this.props.user.id)
+    this.props.fetchHuntLocations(1)
 
-    const { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const { status } = await Permissions.askAsync(Permissions.LOCATION)
     if (status === 'granted') {
       const location = await Location.getCurrentPositionAsync({
         enableHighAccuracy: true,
       });
-      console.log("Location granted: ", location);
+      console.log("Location granted: ", location)
     }
 
     this.watchId = navigator.geolocation.watchPosition((position) => {
@@ -34,12 +35,12 @@ class MapScreen extends Component {
         console.log('error: ', error)
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    );
+    )
   }
 
   render() {
-    let huntMarkers = this.props.huntLocations;
-    let userLoc = { latitude: this.state.userLatitude, longitude: this.state.userLongitude };
+    let huntMarkers = this.props.huntLocations
+    let userLoc = { latitude: this.state.userLatitude, longitude: this.state.userLongitude }
     return (
       <SafeAreaView style={styles.container}>
         <View style={{flex: 1}}>
@@ -64,7 +65,7 @@ class MapScreen extends Component {
                     latitude: parseFloat(marker.latitude),
                     longitude: parseFloat(marker.longitude)
                   };
-                  const metadata = `Marker ID: ${marker.id}`;
+                  const metadata = `Marker ID: ${marker.id}`
 
                   return (
                     <Marker
@@ -86,7 +87,7 @@ class MapScreen extends Component {
           <Text></Text>
         </View>
       </SafeAreaView>
-    );
+    )
   }
 }
 
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
   },
   huntLocMarker: {
     backgroundColor: 'red',
-    borderColor: 'lightred',
+    borderColor: 'pink',
     borderWidth: 2,
     padding: 5,
     borderRadius: 50
@@ -125,16 +126,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '90%'
   }
-});
+})
 
 const mapStateToProps = state => {
   return {
-    huntLocations: state.huntLocations
-  };
-};
+    huntLocations: state.huntLocations,
+    user: state.user
+  }
+}
 
 const mapDispatchToProps = dispatch => {
-  return { fetchHuntLocations: () => dispatch(fetchAllHuntLocations()) };
-};
+  return { fetchHuntLocations: () => dispatch(fetchAllHuntLocations()) }
+}
 
-export default connect(mapStateToProps, mapDispatchToProps)(MapScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(MapScreen)
