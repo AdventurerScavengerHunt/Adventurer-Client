@@ -21,7 +21,7 @@ class Hunts extends React.Component {
   //------------------------------------------------------------------
   async handleSelectedHunt(huntId) {
     //Post to create hunts and put on state
-    await fetchCreatedHuntLocations(huntId, this.props.user.id)
+    await fetchCreatedHuntLocations(this.props.user.id, huntId)
     this.setState({ huntSelected: true })
   }
   //------------------------------------------------------------------
