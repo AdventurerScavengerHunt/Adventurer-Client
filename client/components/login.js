@@ -11,8 +11,8 @@ class Login extends React.Component {
   constructor() {
     super()
     this.state = {
-      email: "clark@clark.com",
-      password: "1234",
+      email: "",
+      password: "",
       error: false,
       authenticated: false
     }
@@ -51,15 +51,9 @@ class Login extends React.Component {
           value={this.state.password}
           autoCapitalize="none"
         />
-<<<<<<< HEAD
-        <View  />
-        <Text>{this.state.error ? "Incorrent username or password" : ""}</Text>
-        <Button title='Sumbit' onPress={this.submitLogin} />
-=======
         <View style={{ margin: 7 }} />
         <Text>{this.state.error ? "Incorrect username or password" : ""}</Text>
         <Button title="Submit" onPress={this.submitLogin} />
->>>>>>> eeaa3471eb247b43849c14f1a28cf6796f16298d
       </View>
     )
     return this.state.authenticated ? startScreen : loginScreen

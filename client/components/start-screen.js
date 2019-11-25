@@ -5,53 +5,45 @@ import { connect } from "react-redux" // Leaving for use with existing game
 import MapScreen from "./map-screen"
 import Hunts from "./hunts"
 //------------------------------------------------------------------
-// CONSTANTS
+const NEW_GAME = "NEW_GAME"
+const RESUME_GAME = "RESUME_GAME"
 //------------------------------------------------------------------
 class StartScreen extends React.Component {
   constructor() {
     super()
     this.state = {
-      newGame: false,
-      resumeGame: false,
-      selection: false
+      selection: ''
     }
-    this.handleNewGame = this.handleNewGame.bind(this)
-    this.handleResumeGame = this.handleResumeGame.bind(this)
+    this.handleSelection = this.handleSelection.bind(this)
   }
   //------------------------------------------------------------------
-  handleNewGame() {
+  handleSelection(inSelection) {
     this.setState({
-      selection: true,
-      newGame: true
+      selection: inSelection
     })
-  }
-  //------------------------------------------------------------------
-  handleResumeGame() {
-    this.setState({ selection: true, resumeGame: true })
   }
   //------------------------------------------------------------------
   render() {
     const huntsScreen = <Hunts />
     const mapScreen = <MapScreen />
-    const startScreen = 
+    const startScreen = (
       <View style={{ margin: 30 }}>
         <View>
           <Button
             disabled={false}
             title="NEW GAME"
-            onPress={this.handleNewGame}
+            onPress={()=>this.handleSelection(NEW_GAME)}
           ></Button>
         </View>
         <View>
-          <Button title="RESUME" onPress={this.handleResumeGame}></Button>
+          <Button title="RESUME" onPress={()=>this.handleSelection(RESUME_GAME)}></Button>
         </View>
       </View>
-    
-    return this.selection
-      ? this.newGame
-        ? huntsScreen
-        : mapScreen
-      : startScreen
+    )
+
+    if(this.state.selection=='') return startScreen
+    else if(this.state.selection == NEW_GAME) return huntsScreen
+    else if(this.state.selection == RESUME_GAME) return mapScreen
   }
 }
 //------------------------------------------------------------------

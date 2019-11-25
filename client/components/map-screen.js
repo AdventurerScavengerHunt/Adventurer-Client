@@ -99,22 +99,6 @@ class MapScreen extends Component {
       },
       { enableHighAccuracy: true, timeout: 2000, maximumAge: 0 }
     )
-<<<<<<< HEAD
-    //---------------------HUNTS---------------------------------------------
-    this.props.fetchAllHuntLocations(1) // Hardcoded User ID | Pending user state
-  }
-  //------------------------------------------------------------------
-  handleFound(targetLat, targetLong) {
-    //Math to compare target and current coordinates
-    //MATH MATH MATH MATH MATH MATH
-    //Make sure not moving past number of levels
-    if (this.state.level < this.props.huntLocations.length - 1)
-      //Increment next level
-      this.setState({
-        level: this.state.level + 1
-      })
-=======
->>>>>>> eeaa3471eb247b43849c14f1a28cf6796f16298d
   }
   //------------------------------------------------------------------
   render() {
@@ -246,12 +230,8 @@ const mapStateToProps = state => {
 //------------------------------------------------------------------
 const mapDispatchToProps = dispatch => {
   return {
-<<<<<<< HEAD
-    fetchAllHuntLocations: userId => dispatch(fetchAllHuntLocations(userId))
-=======
     fetchHuntLocations: userId => dispatch(fetchAllHuntLocations(userId)),
     fetchVisitLocation: (userId, locationId) => dispatch(fetchVisitedHuntLocation(userId, locationId))
->>>>>>> eeaa3471eb247b43849c14f1a28cf6796f16298d
   }
 }
 //------------------------------------------------------------------
