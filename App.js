@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Login from './client/components/login';
 import MapScreen from './client/components/map-screen';
+import StartScreen from './client/components/start-screen';
 
 import { Provider } from 'react-redux';
 import store from './client/store';
@@ -13,6 +14,7 @@ const AppNavigator = createStackNavigator(
   {
     Login: Login,
     MapScreen: MapScreen,
+    StartScreen: StartScreen,
   },
   {
     initialRouteName: 'Login',

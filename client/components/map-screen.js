@@ -85,7 +85,7 @@ class MapScreen extends Component {
         });
       } else if (levelsToComplete === 0) {
         console.log(this.props);
-        this.props.navigate('Login');
+        this.props.navigate('StartScreen');
       }
     }
   }

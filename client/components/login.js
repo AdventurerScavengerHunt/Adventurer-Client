@@ -30,7 +30,7 @@ class Login extends React.Component {
   //------------------------------------------------------------------
   render() {
     return (
-      <View style={styles.container}>
+      <View style={{ margin: 30 }}>
         <Text style={{ fontSize: 27 }}>LOGIN</Text>
         <TextInput
           placeholder="Email"
