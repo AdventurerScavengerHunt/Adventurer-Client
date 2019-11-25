@@ -52,8 +52,8 @@ class Login extends React.Component {
           autoCapitalize="none"
         />
         <View style={{ margin: 7 }} />
-        <Text>{this.state.error ? "Incorrent username or password" : ""}</Text>
-        <Button title="Sumbit" onPress={this.submitLogin} />
+        <Text>{this.state.error ? "Incorrect username or password" : ""}</Text>
+        <Button title="Submit" onPress={this.submitLogin} />
       </View>
     )
     return this.state.authenticated ? startScreen : loginScreen

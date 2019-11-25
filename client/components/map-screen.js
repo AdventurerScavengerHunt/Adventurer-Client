@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component } from 'react'
 import {
   StyleSheet,
   View,
@@ -6,16 +6,34 @@ import {
   Button,
   Text,
   SafeAreaView
-} from "react-native"
-import MapView, { Marker } from "react-native-maps"
-import * as Permissions from "expo-permissions"
-import * as Location from "expo-location"
-import { connect } from "react-redux"
+} from 'react-native'
+import MapView, { Marker } from 'react-native-maps'
+import * as Permissions from 'expo-permissions'
+import * as Location from 'expo-location'
+import { connect } from 'react-redux'
 //------------------------------------------------------------------
-import { fetchAllHuntLocations } from "../store/huntLocations"
+import { fetchAllHuntLocations, fetchVisitedHuntLocation } from '../store/huntLocations'
 //------------------------------------------------------------------
-const LATITUDE_DELTA = 0.0922
-const LONGITUDE_DELTA = 0.0421
+const LATITUDE_DELTA = 0.00922
+const LONGITUDE_DELTA = 0.00421
+//------------------------------------------------------------------
+function coordDist(lat1, lon1, lat2, lon2) {
+  let R = 6371 // Radius of the earth in km
+  let diffLat = deg2rad(lat2 - lat1)
+  let diffLon = deg2rad(lon2 - lon1)
+  let a =
+    Math.sin(diffLat / 2) * Math.sin(diffLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(diffLon / 2) * Math.sin(diffLon / 2)
+  let theta = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  let dist = R * theta // Distance in km
+  dist = dist * 1000 * (1 / 0.3048) // Distance in feet
+  return dist
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180)
+}
 //------------------------------------------------------------------
 class MapScreen extends Component {
   //------------------------------------------------------------------
@@ -26,8 +44,11 @@ class MapScreen extends Component {
       longitude: 0,
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA,
-      level: 0
+      level: 0,
+      score: 0
     }
+    this.handleFound = this.handleFound.bind(this)
+    this.updatePosition = this.updatePosition.bind(this)
   }
   //------------------------------------------------------------------
   async componentDidMount() {
@@ -39,31 +60,45 @@ class MapScreen extends Component {
         enableHighAccuracy: true
       })
     }
-    this.watchId = navigator.geolocation.watchPosition(
-      position => {
+    setInterval(this.updatePosition, 2000)
+    //---------------------HUNTS---------------------------------------------
+    this.props.fetchHuntLocations(this.props.user.id)
+  }
+  //------------------------------------------------------------------
+  handleFound(targetLat, targetLong) {
+    //Math to compare target and current coordinates
+    //Make sure not moving past number of levels
+    let huntMarkers = this.props.huntLocations
+    let huntLocId = huntMarkers[this.state.level].huntLocation.locationId
+    if (coordDist(this.state.latitude, this.state.longitude, targetLat, targetLong) < 5000) {
+      this.props.fetchVisitLocation(this.props.user.id, huntLocId)
+
+      //Increment next level
+      if (this.state.level < this.props.huntLocations.length - 1) {
+        this.setState(prevState => {
+          return { level: prevState.level + 1, score: prevState.score + 1 }
+       })
+      } else {
+        // else do something involved with winning (redirect back to start screen, display "You Win!", etc)
+        this.setState(prevState => {
+          return { score: prevState.score + 1 }
+       })
+      }
+    }
+  }
+  updatePosition() {
+    navigator.geolocation.getCurrentPosition(
+    position => {
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
         })
       },
       error => {
-        console.log("error: ", error)
+        console.log('error: ', error)
       },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      { enableHighAccuracy: true, timeout: 2000, maximumAge: 0 }
     )
-    //---------------------HUNTS---------------------------------------------
-    this.props.fetchHuntLocations(1) // Hardcoded User ID | Pending user state
-  }
-  //------------------------------------------------------------------
-  handleFound(targetLat, targetLong) {
-    //Math to compare target and current coordinates
-    //MATH MATH MATH MATH MATH MATH
-    //Make sure not moving past number of levels
-    if (this.state.level < this.props.huntLocations.length - 1)
-      //Increment next level
-      this.setState({
-        level: this.state.level + 1
-      })
   }
   //------------------------------------------------------------------
   render() {
@@ -71,6 +106,10 @@ class MapScreen extends Component {
     let userLoc = {
       latitude: this.state.latitude,
       longitude: this.state.longitude
+    }
+    let testMarkerLoc = {
+      latitude: 40.8533202,
+      longitude: -73.9357555
     }
     return (
       <SafeAreaView style={styles.container}>
@@ -80,9 +119,34 @@ class MapScreen extends Component {
             <Marker coordinate={userLoc}>
               <View style={styles.userLocMarker} />
             </Marker>
+            {/* Testing individual hunt location marker */}
+            <Marker coordinate={testMarkerLoc}>
+              <View style={styles.huntLocMarker} />
+            </Marker>
+            {/* Testing database hunt location markers */}
+            {!huntMarkers
+              ? null
+              : huntMarkers.map(marker => {
+                  const coords = {
+                    latitude: parseFloat(marker.latitude),
+                    longitude: parseFloat(marker.longitude)
+                  };
+                  return (
+                    <Marker
+                      key={marker.id}
+                      coordinate={coords}
+                    >
+                      <View style={styles.huntLocMarker} />
+                    </Marker>
+                  );
+                })}
           </MapView>
         </View>
-        {/* Database hunt location markers */}
+        {/* Database hunt location info */}
+        <View style={styles.scoreBlock}>
+          <Text style={styles.scoreText}>Score</Text>
+          <Text style={styles.scoreText}>{this.state.score} / {this.props.huntLocations.length}</Text>
+        </View>
         <View>
           <Text>{huntMarkers[this.state.level].riddle}</Text>
           <Text>
@@ -92,6 +156,7 @@ class MapScreen extends Component {
           <Text>
             CURR: {this.state.latitude} : {this.state.longitude}
           </Text>
+          {coordDist(this.state.latitude, this.state.longitude, huntMarkers[this.state.level].latitude, huntMarkers[this.state.level].longitude) < 5000 ? <Text>Ya found me!</Text> : <Text>Keep searchin'!</Text>}
           <Button
             title="FOUND"
             onPress={() =>
@@ -110,50 +175,63 @@ class MapScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   mapStyle: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height
   },
   userLocMarker: {
-    backgroundColor: "blue",
-    borderColor: "lightblue",
+    backgroundColor: 'blue',
+    borderColor: 'lightblue',
     borderWidth: 2,
     padding: 3,
     borderRadius: 100
   },
   huntLocMarker: {
-    backgroundColor: "red",
-    borderColor: "pink",
+    backgroundColor: 'red',
+    borderColor: 'pink',
     borderWidth: 2,
     padding: 5,
     borderRadius: 50
   },
+  scoreBlock: {
+    backgroundColor: 'rgba(165, 42, 42, 0.7)',
+    padding: 5,
+    borderRadius: 20,
+    alignItems: 'center',
+    position: 'absolute',
+    top: '5%',
+    left: '5%'
+  },
+  scoreText: {
+    color: 'goldenrod'
+  },
   testWindow: {
-    backgroundColor: "gray",
-    position: "absolute",
-    top: "10%"
+    backgroundColor: 'gray',
+    position: 'absolute',
+    top: '10%'
   },
   riddle: {
-    backgroundColor: "gray",
-    position: "absolute",
-    top: "90%"
+    backgroundColor: 'gray',
+    position: 'absolute',
+    top: '90%'
   }
 })
 //------------------------------------------------------------------
 const mapStateToProps = state => {
   return {
-    huntLocations: state.huntLocations
+    huntLocations: state.huntLocations,
+    user: state.user
   }
 }
 //------------------------------------------------------------------
-
 const mapDispatchToProps = dispatch => {
   return {
-    fetchHuntLocations: userId => dispatch(fetchAllHuntLocations(userId))
+    fetchHuntLocations: userId => dispatch(fetchAllHuntLocations(userId)),
+    fetchVisitLocation: (userId, locationId) => dispatch(fetchVisitedHuntLocation(userId, locationId))
   }
 }
 //------------------------------------------------------------------
