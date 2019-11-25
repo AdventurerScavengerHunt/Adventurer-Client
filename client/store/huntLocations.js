@@ -76,13 +76,10 @@ export const fetchVisitedHuntLocation = (
 }
 
 // drop hunt locations from the user and then update state
-export const fetchDroppingHuntLocations = (
-  userId,
-  locationId
-) => async dispatch => {
+export const fetchDroppingHuntLocations = userId => async dispatch => {
   try {
     await axios.delete(
-      `https://adventurerapp.herokuapp.com/api/huntLocations/${userId}/${locationId}`
+      `https://adventurerapp.herokuapp.com/api/huntLocations/${userId}`
     )
     dispatch(dropHuntLocations())
   } catch (err) {
@@ -103,8 +100,8 @@ export default function(state = huntLocations, action) {
       currentLocations = currentLocations.filter(location => {
         if (location.huntLocation.locationId === visitedLocationId) {
           location.huntLocation.visited = true
-          return location
         }
+        return location
       })
       return currentLocations
     }
