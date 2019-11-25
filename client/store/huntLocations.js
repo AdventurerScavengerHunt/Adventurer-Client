@@ -12,7 +12,7 @@ const DROP_HUNT_LOCATIONS = "DROP_HUNT_LOCATIONS"
  */
 const huntLocations = [
   {
-    id: 0,
+    id: null,
     latitude: 0,
     longitude: 0,
     riddle: "",

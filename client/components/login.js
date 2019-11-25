@@ -2,7 +2,7 @@ import React from "react"
 import { Text, TextInput, View, Button, StyleSheet } from "react-native"
 import { connect } from "react-redux"
 //------------------------------------------------------------------
-import MapScreen from "./map-screen"
+import StartScreen from "./start-screen"
 import { auth } from "../store/user"
 //------------------------------------------------------------------
 const LOGIN = "login"
@@ -11,8 +11,8 @@ class Login extends React.Component {
   constructor() {
     super()
     this.state = {
-      email: "",
-      password: "",
+      email: "clark@clark.com",
+      password: "1234",
       error: false,
       authenticated: false
     }
@@ -34,9 +34,9 @@ class Login extends React.Component {
   }
   //------------------------------------------------------------------
   render() {
-    const startScreen = <MapScreen />
+    const startScreen = <StartScreen />
     const loginScreen = (
-      <View style={styles.container}>
+      <View style={{margin:30}}>
         <Text style={{ fontSize: 27 }}>LOGIN</Text>
         <TextInput
           placeholder="Email"
@@ -51,9 +51,9 @@ class Login extends React.Component {
           value={this.state.password}
           autoCapitalize="none"
         />
-        <View style={{ margin: 7 }} />
+        <View  />
         <Text>{this.state.error ? "Incorrent username or password" : ""}</Text>
-        <Button title="Sumbit" onPress={this.submitLogin} />
+        <Button title='Sumbit' onPress={this.submitLogin} />
       </View>
     )
     return this.state.authenticated ? startScreen : loginScreen

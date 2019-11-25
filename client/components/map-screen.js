@@ -52,7 +52,7 @@ class MapScreen extends Component {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     )
     //---------------------HUNTS---------------------------------------------
-    this.props.fetchHuntLocations(1) // Hardcoded User ID | Pending user state
+    this.props.fetchAllHuntLocations(1) // Hardcoded User ID | Pending user state
   }
   //------------------------------------------------------------------
   handleFound(targetLat, targetLong) {
@@ -153,7 +153,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchHuntLocations: userId => dispatch(fetchAllHuntLocations(userId))
+    fetchAllHuntLocations: userId => dispatch(fetchAllHuntLocations(userId))
   }
 }
 //------------------------------------------------------------------
