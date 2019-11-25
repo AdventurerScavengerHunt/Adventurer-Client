@@ -2,7 +2,7 @@
   "expo": {
     "name": "Adventurer",
     "slug": "adventurer-client",
-    "privacy": "public",
+    "privacy": "unlisted",
     "sdkVersion": "35.0.0",
     "platforms": [
       "ios",
