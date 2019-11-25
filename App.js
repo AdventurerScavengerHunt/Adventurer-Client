@@ -9,14 +9,15 @@ import store from './client/store';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
-const AppNavigator = createStackNavigator({
-  Login: {
-    screen: Login,
+const AppNavigator = createStackNavigator(
+  {
+    Login: Login,
+    MapScreen: MapScreen,
   },
-  MapScreen: {
-    screen: MapScreen,
-  },
-});
+  {
+    initialRouteName: 'Login',
+  }
+);
 
 const AppContainer = createAppContainer(AppNavigator);
 

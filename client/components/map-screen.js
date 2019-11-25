@@ -84,8 +84,8 @@ class MapScreen extends Component {
           return { level: prevState.level + 1 };
         });
       } else if (levelsToComplete === 0) {
-        console.log('yay');
-        //display "You win!" and redirect to start screen
+        console.log(this.props);
+        this.props.navigate('Login');
       }
     }
   }
@@ -225,10 +225,11 @@ const styles = StyleSheet.create({
   },
 });
 //------------------------------------------------------------------
-const mapStateToProps = state => {
+const mapStateToProps = (state, ownProps) => {
   return {
     huntLocations: state.huntLocations,
     user: state.user,
+    navigate: ownProps.navigation.navigate,
   };
 };
 //------------------------------------------------------------------
