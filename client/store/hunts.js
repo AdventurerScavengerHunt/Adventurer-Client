@@ -22,7 +22,7 @@ export const fetchAllHunts = () => async dispatch => {
   try {
     const res = await axios.get(
       "https://adventurerapp.herokuapp.com/api/hunts"
-    ) /* will need to update path once database is deployed! */
+    ) 
     dispatch(getHunts(res.data))
   } catch (err) {
     console.error(err)
