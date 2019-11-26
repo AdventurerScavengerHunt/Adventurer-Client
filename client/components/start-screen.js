@@ -8,12 +8,12 @@ const RESUME_GAME = 'RESUME_GAME'
 class StartScreen extends React.Component {
   constructor() {
     super()
-    this.state = {hasPreviousGame: false}
+    this.state = {hasNoPreviousGame: false}
     this.handleSelection = this.handleSelection.bind(this)
   }
   componentDidMount() {
     if (this.props.user.huntId === null) {
-      this.setState({hasPreviousGame: true})
+      this.setState({hasNoPreviousGame: true})
     }
   }
   //------------------------------------------------------------------
@@ -36,7 +36,7 @@ class StartScreen extends React.Component {
         </View>
         <View>
           <Button
-            disabled={this.state.hasPreviousGame}
+            disabled={this.state.hasNoPreviousGame}
             title="RESUME"
             onPress={() => this.handleSelection(RESUME_GAME)}
           ></Button>
