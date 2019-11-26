@@ -30,7 +30,7 @@ class Login extends React.Component {
   }
   //------------------------------------------------------------------
   signUp() {
-    // this.props.navigate('SignUp');
+    this.props.navigate('SignUp');
   }
   //------------------------------------------------------------------
   render() {
@@ -51,7 +51,7 @@ class Login extends React.Component {
           autoCapitalize="none"
         />
         <View style={{ margin: 7 }} />
-        <Text>{this.state.error ? 'Incorrect username or password' : ''}</Text>
+        <Text>{this.state.error ? 'Incorrect email or password' : ''}</Text>
         <Button title="Sign Up" onPress={this.signUp} />
         <Button title="Submit" onPress={this.submitLogin} />
       </View>

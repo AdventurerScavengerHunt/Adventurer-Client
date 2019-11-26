@@ -29,10 +29,10 @@ export const me = () => async dispatch => {
   }
 }
 
-export const auth = (email, password, method) => async dispatch => {
+export const auth = (email, password, method, username) => async dispatch => {
   let res
   try {
-    res = await axios.post(`https://adventurerapp.herokuapp.com/auth/${method}`, {email, password})
+    res = await axios.post(`https://adventurerapp.herokuapp.com/auth/${method}`, {email, password, username})
   } catch (authError) {
     return dispatch(getUser({error: authError}))
   }
