@@ -17,7 +17,7 @@ class Hunts extends React.Component {
   //------------------------------------------------------------------
   async handleSelectedHunt(huntId) {
     //Post to create hunts and put on state
-    await fetchCreatedHuntLocations(this.props.user.id, huntId);
+    await this.props.fetchCreatedHuntLocations(this.props.user.id, huntId);
     this.props.navigate('MapScreen');
   }
   //------------------------------------------------------------------

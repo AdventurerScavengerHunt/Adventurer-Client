@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import {
   fetchAllHuntLocations,
   fetchVisitedHuntLocation,
+  fetchDroppingHuntLocations,
 } from '../store/huntLocations';
 import { coordDist } from '../../coordinate-logic';
 //------------------------------------------------------------------
@@ -57,7 +58,7 @@ class MapScreen extends Component {
     clearInterval(locationTracking);
   }
   //------------------------------------------------------------------
-  handleFound(targetLat, targetLong) {
+  async handleFound(targetLat, targetLong) {
     //Math to compare target and current coordinates
     //Make sure not moving past number of levels
 
@@ -77,7 +78,7 @@ class MapScreen extends Component {
     //conditional logic
     if (withinDistance) {
       //update visited to "true" for this location
-      this.props.fetchVisitLocation(this.props.user.id, huntLocId);
+      await this.props.fetchVisitLocation(this.props.user.id, huntLocId);
       //increment score
       this.setState(prevState => {
         return { score: prevState.score + 1 };
@@ -89,8 +90,8 @@ class MapScreen extends Component {
           return { level: prevState.level + 1 };
         });
       } else if (levelsToComplete === 0) {
-        console.log(this.props);
         this.props.navigate('StartScreen');
+        await this.props.fetchDropLocations(this.props.user.id);
       }
     }
   }
@@ -147,35 +148,37 @@ class MapScreen extends Component {
             {this.state.score} / {this.props.huntLocations.length}
           </Text>
         </View>
-        <View>
-          <Text>{huntMarkers[level].riddle}</Text>
-          <Text>
-            TARGET: {huntMarkers[level].latitude} :{' '}
-            {huntMarkers[level].longitude}
-          </Text>
-          <Text>
-            CURR: {this.state.latitude} : {this.state.longitude}
-          </Text>
-          {coordDist(
-            this.state.latitude,
-            this.state.longitude,
-            huntMarkers[level].latitude,
-            huntMarkers[level].longitude
-          ) < 5000 ? (
-            <Text>Ya found me!</Text>
-          ) : (
-            <Text>Keep searchin'!</Text>
-          )}
-          <Button
-            title="FOUND"
-            onPress={() =>
-              this.handleFound(
-                huntMarkers[level].latitude,
-                huntMarkers[level].longitude
-              )
-            }
-          />
-        </View>
+        {this.props.huntLocations[0] && (
+          <View>
+            <Text>{huntMarkers[level].riddle}</Text>
+            <Text>
+              TARGET: {huntMarkers[level].latitude} :{' '}
+              {huntMarkers[level].longitude}
+            </Text>
+            <Text>
+              CURR: {this.state.latitude} : {this.state.longitude}
+            </Text>
+            {coordDist(
+              this.state.latitude,
+              this.state.longitude,
+              huntMarkers[level].latitude,
+              huntMarkers[level].longitude
+            ) < 5000 ? (
+              <Text>Ya found me!</Text>
+            ) : (
+              <Text>Keep searchin'!</Text>
+            )}
+            <Button
+              title="FOUND"
+              onPress={() =>
+                this.handleFound(
+                  huntMarkers[level].latitude,
+                  huntMarkers[level].longitude
+                )
+              }
+            />
+          </View>
+        )}
       </SafeAreaView>
     );
   }
@@ -243,6 +246,7 @@ const mapDispatchToProps = dispatch => {
     fetchHuntLocations: userId => dispatch(fetchAllHuntLocations(userId)),
     fetchVisitLocation: (userId, locationId) =>
       dispatch(fetchVisitedHuntLocation(userId, locationId)),
+    fetchDropLocations: userId => dispatch(fetchDroppingHuntLocations(userId)),
   };
 };
 //------------------------------------------------------------------
