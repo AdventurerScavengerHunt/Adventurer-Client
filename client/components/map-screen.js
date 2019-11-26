@@ -33,7 +33,8 @@ class MapScreen extends Component {
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA,
       level: 0,
-      score: 0
+      score: 0,
+      won: false
     }
     this.handleFound = this.handleFound.bind(this)
     this.updatePosition = this.updatePosition.bind(this)
@@ -97,8 +98,11 @@ class MapScreen extends Component {
           return {level: prevState.level + 1}
         })
       } else if (levelsToComplete === 0) {
-        this.props.navigate('StartScreen')
+        this.setState({won: true})
         await this.props.fetchDropLocations(this.props.user.id)
+        setTimeout(() => {
+          this.props.navigate('StartScreen')
+        }, 10000)
       }
     }
   }
@@ -149,12 +153,19 @@ class MapScreen extends Component {
           </MapView>
         </View>
         {/* Database hunt location info */}
-        <View style={styles.scoreBlock}>
-          <Text style={styles.scoreText}>Score</Text>
-          <Text style={styles.scoreText}>
-            {this.state.score} / {this.props.huntLocations.length}
-          </Text>
-        </View>
+        {this.props.huntLocations[0] && (
+          <View style={styles.scoreBlock}>
+            <Text style={styles.scoreText}>Score</Text>
+            <Text style={styles.scoreText}>
+              {this.state.score} / {this.props.huntLocations.length}
+            </Text>
+          </View>
+        )}
+        {this.state.won && (
+          <View>
+            <Text>YOU WIN!!!!!!!!!</Text>
+          </View>
+        )}
         {this.props.huntLocations[0] && (
           <View>
             <Text>{huntMarkers[level].riddle}</Text>
