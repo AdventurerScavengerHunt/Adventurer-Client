@@ -21,10 +21,14 @@ import {coordDist} from '../../coordinate-logic'
 //------------------------------------------------------------------
 const LATITUDE_DELTA = 0.00922
 const LONGITUDE_DELTA = 0.00421
-let locationTracking
+// let locationTracking
+let unmounted = false
 //------------------------------------------------------------------
 class MapScreen extends Component {
   //------------------------------------------------------------------
+  static navigationOptions = {
+    headerLeft: null
+  }
   constructor() {
     super()
     this.state = {
@@ -44,13 +48,15 @@ class MapScreen extends Component {
     //-------------------LOCATION PERMISSIONS-------------------------------
 
     const {status} = await Permissions.askAsync(Permissions.LOCATION)
+    //what is the purpose of this?
     if (status === 'granted') {
       await Location.getCurrentPositionAsync({
         enableHighAccuracy: true
       })
     }
     //-------SET LOCATION TRACKING------------------------------------------
-    locationTracking = setInterval(this.updatePosition, 2000)
+    this.locationTracking = setInterval(this.updatePosition, 2000)
+    console.log('mount', this.locationTracking)
     //---------------------HUNTS---------------------------------------------
     await this.props.fetchHuntLocations(this.props.user.id)
     let initialScore = this.props.huntLocations.filter(
@@ -60,10 +66,6 @@ class MapScreen extends Component {
     this.setState({
       score: initialScore
     })
-  }
-  //------------------------------------------------------------------
-  componentWillUnmount() {
-    clearInterval(locationTracking)
   }
   //------------------------------------------------------------------
   async handleFound(targetLat, targetLong) {
@@ -107,18 +109,27 @@ class MapScreen extends Component {
     }
   }
   updatePosition() {
+    console.log("i'm still running")
     navigator.geolocation.getCurrentPosition(
       position => {
-        this.setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        })
+        if (!unmounted) {
+          this.setState({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          })
+        }
       },
       error => {
         console.log('error: ', error)
       },
       {enableHighAccuracy: true, timeout: 2000, maximumAge: 0}
     )
+  }
+  //------------------------------------------------------------------
+  componentWillUnmount() {
+    console.log('unmount', this.locationTracking)
+    unmounted = true
+    clearInterval(this.locationTracking)
   }
   //------------------------------------------------------------------
   render() {
