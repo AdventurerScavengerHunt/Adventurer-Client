@@ -20,6 +20,7 @@ import { coordDist } from '../../coordinate-logic';
 //------------------------------------------------------------------
 const LATITUDE_DELTA = 0.00922;
 const LONGITUDE_DELTA = 0.00421;
+let locationTracking;
 //------------------------------------------------------------------
 class MapScreen extends Component {
   //------------------------------------------------------------------
@@ -47,9 +48,13 @@ class MapScreen extends Component {
       });
     }
     //-------SET LOCATION TRACKING------------------------------------------
-    setInterval(this.updatePosition, 2000);
+    locationTracking = setInterval(this.updatePosition, 2000);
     //---------------------HUNTS---------------------------------------------
     this.props.fetchHuntLocations(this.props.user.id);
+  }
+  //------------------------------------------------------------------
+  componentWillUnmount() {
+    clearInterval(locationTracking);
   }
   //------------------------------------------------------------------
   handleFound(targetLat, targetLong) {
