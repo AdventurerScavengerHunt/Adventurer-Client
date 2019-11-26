@@ -52,7 +52,6 @@ class MapScreen extends Component {
     locationTracking = setInterval(this.updatePosition, 2000);
     //---------------------HUNTS---------------------------------------------
     this.props.fetchHuntLocations(this.props.user.id);
-    console.log(this.props.huntLocations);
   }
   //------------------------------------------------------------------
   componentWillUnmount() {
