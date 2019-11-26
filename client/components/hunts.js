@@ -1,30 +1,32 @@
-import React from 'react';
-import { Text, TextInput, View, Button, StyleSheet } from 'react-native';
-import { connect } from 'react-redux';
+import React from 'react'
+import {Text, TextInput, View, Button, StyleSheet} from 'react-native'
+import {connect} from 'react-redux'
 //------------------------------------------------------------------
-import { fetchAllHunts } from '../store/hunts';
-import { fetchCreatedHuntLocations } from '../store/huntLocations';
+import {fetchAllHunts} from '../store/hunts'
+import {
+  fetchCreatedHuntLocations,
+  fetchDroppingHuntLocations
+} from '../store/huntLocations'
 //------------------------------------------------------------------
 // CONSTANTS
 //------------------------------------------------------------------
 class Hunts extends React.Component {
-  constructor() {
-    super();
-  }
   async componentDidMount() {
-    await this.props.fetchAllHunts();
+    await this.props.fetchAllHunts()
   }
   //------------------------------------------------------------------
   async handleSelectedHunt(huntId) {
+    //Drops any old hunts for user
+    await this.props.fetchDropHuntLocations(this.props.user.id)
     //Post to create hunts and put on state
-    await this.props.fetchCreatedHuntLocations(this.props.user.id, huntId);
-    this.props.navigate('MapScreen');
+    await this.props.fetchCreatedHuntLocations(this.props.user.id, huntId)
+    this.props.navigate('MapScreen')
   }
   //------------------------------------------------------------------
   render() {
-    const hunts = this.props.hunts;
+    const hunts = this.props.hunts
     return (
-      <View style={{ margin: 50 }}>
+      <View style={{margin: 50}}>
         {hunts.map(hunt => (
           <View key={hunt.id}>
             <Button
@@ -34,7 +36,7 @@ class Hunts extends React.Component {
           </View>
         ))}
       </View>
-    );
+    )
   }
 }
 //------------------------------------------------------------------
@@ -44,21 +46,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   errorMessageText: {
-    textDecorationColor: 'red',
-  },
-});
+    textDecorationColor: 'red'
+  }
+})
 //------------------------------------------------------------------
 
 const mapStateToProps = (state, ownProps) => {
   return {
     user: state.user,
     hunts: state.hunts,
-    navigate: ownProps.navigation.navigate,
-  };
-};
+    navigate: ownProps.navigation.navigate
+  }
+}
 //------------------------------------------------------------------
 
 const mapDispatchToProps = dispatch => {
@@ -66,8 +68,10 @@ const mapDispatchToProps = dispatch => {
     fetchAllHunts: () => dispatch(fetchAllHunts()),
     fetchCreatedHuntLocations: (userId, huntId) =>
       dispatch(fetchCreatedHuntLocations(userId, huntId)),
-  };
-};
+    fetchDropHuntLocations: (userId, huntId) =>
+      dispatch(fetchDroppingHuntLocations(userId, huntId))
+  }
+}
 //------------------------------------------------------------------
 
-export default connect(mapStateToProps, mapDispatchToProps)(Hunts);
+export default connect(mapStateToProps, mapDispatchToProps)(Hunts)
