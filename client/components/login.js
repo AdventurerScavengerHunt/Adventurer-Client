@@ -51,7 +51,7 @@ class Login extends React.Component {
           autoCapitalize="none"
         />
         <View style={{ margin: 7 }} />
-        <Text>{this.state.error ? 'Incorrect email or password' : ''}</Text>
+        <Text style={styles.errorMessageText}>{this.state.error ? 'Incorrect email or password' : ''}</Text>
         <Button title="Sign Up" onPress={this.signUp} />
         <Button title="Submit" onPress={this.submitLogin} />
       </View>
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   errorMessageText: {
-    textDecorationColor: 'red',
+    color: 'red',
   },
 });
 //------------------------------------------------------------------

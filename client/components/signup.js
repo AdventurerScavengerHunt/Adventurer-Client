@@ -18,6 +18,7 @@ class SignUp extends React.Component {
     this.createAccount = this.createAccount.bind(this)
   }
 
+  // checks if user entered valid info and displays handy errorMessage if not
   async createAccount() {
     this.setState({
       errorMessage: null
@@ -26,18 +27,20 @@ class SignUp extends React.Component {
       this.state.password === this.state.confirmPassword &&
       this.state.password.length >= 3
     ) {
-      try {
-        await this.props.signup(
-          this.state.email,
-          this.state.password,
-          SIGNUP,
-          this.state.username
-        )
-        this.props.navigate('StartScreen')
-      } catch (error) {
+      const newUser = await this.props.signup(
+        this.state.email,
+        this.state.password,
+        SIGNUP,
+        this.state.username
+      )
+      // if object returned on newUser, which will include the appropriate error, a validation error has occurred
+      // newUser should return undefined if successful
+      if (newUser) {
         this.setState({
-          errorMessage: error
+          errorMessage: 'Invalid username or email'
         })
+      } else {
+        this.props.navigate('StartScreen')
       }
     } else if (this.state.password !== this.state.confirmPassword) {
       this.setState({
@@ -100,7 +103,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   errorMessageText: {
-    textDecorationColor: 'red'
+    color: 'red'
   }
 })
 
