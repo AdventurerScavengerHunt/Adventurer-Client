@@ -21,10 +21,13 @@ import {coordDist} from '../../coordinate-logic'
 //------------------------------------------------------------------
 const LATITUDE_DELTA = 0.00922
 const LONGITUDE_DELTA = 0.00421
-let locationTracking
+let mounted = true
 //------------------------------------------------------------------
 class MapScreen extends Component {
   //------------------------------------------------------------------
+  static navigationOptions = {
+    headerLeft: null
+  }
   constructor() {
     super()
     this.state = {
@@ -50,7 +53,7 @@ class MapScreen extends Component {
       })
     }
     //-------SET LOCATION TRACKING------------------------------------------
-    locationTracking = setInterval(this.updatePosition, 2000)
+    this.locationTracking = setInterval(this.updatePosition, 2000)
     //---------------------HUNTS---------------------------------------------
     await this.props.fetchHuntLocations(this.props.user.id)
     let initialScore = this.props.huntLocations.filter(
@@ -60,10 +63,6 @@ class MapScreen extends Component {
     this.setState({
       score: initialScore
     })
-  }
-  //------------------------------------------------------------------
-  componentWillUnmount() {
-    clearInterval(locationTracking)
   }
   //------------------------------------------------------------------
   async handleFound(targetLat, targetLong) {
@@ -109,16 +108,23 @@ class MapScreen extends Component {
   updatePosition() {
     navigator.geolocation.getCurrentPosition(
       position => {
-        this.setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        })
+        if (mounted) {
+          this.setState({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          })
+        }
       },
       error => {
         console.log('error: ', error)
       },
       {enableHighAccuracy: true, timeout: 2000, maximumAge: 0}
     )
+  }
+  //------------------------------------------------------------------
+  componentWillUnmount() {
+    mounted = false
+    clearInterval(this.locationTracking)
   }
   //------------------------------------------------------------------
   render() {
