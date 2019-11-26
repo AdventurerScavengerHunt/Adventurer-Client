@@ -21,7 +21,6 @@ import {coordDist} from '../../coordinate-logic'
 //------------------------------------------------------------------
 const LATITUDE_DELTA = 0.00922
 const LONGITUDE_DELTA = 0.00421
-// let locationTracking
 let unmounted = false
 //------------------------------------------------------------------
 class MapScreen extends Component {
@@ -48,7 +47,6 @@ class MapScreen extends Component {
     //-------------------LOCATION PERMISSIONS-------------------------------
 
     const {status} = await Permissions.askAsync(Permissions.LOCATION)
-    //what is the purpose of this?
     if (status === 'granted') {
       await Location.getCurrentPositionAsync({
         enableHighAccuracy: true
@@ -56,7 +54,6 @@ class MapScreen extends Component {
     }
     //-------SET LOCATION TRACKING------------------------------------------
     this.locationTracking = setInterval(this.updatePosition, 2000)
-    console.log('mount', this.locationTracking)
     //---------------------HUNTS---------------------------------------------
     await this.props.fetchHuntLocations(this.props.user.id)
     let initialScore = this.props.huntLocations.filter(
@@ -109,7 +106,6 @@ class MapScreen extends Component {
     }
   }
   updatePosition() {
-    console.log("i'm still running")
     navigator.geolocation.getCurrentPosition(
       position => {
         if (!unmounted) {
@@ -127,7 +123,6 @@ class MapScreen extends Component {
   }
   //------------------------------------------------------------------
   componentWillUnmount() {
-    console.log('unmount', this.locationTracking)
     unmounted = true
     clearInterval(this.locationTracking)
   }
