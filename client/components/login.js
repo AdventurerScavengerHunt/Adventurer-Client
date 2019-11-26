@@ -15,6 +15,7 @@ class Login extends React.Component {
       error: false,
     };
     this.submitLogin = this.submitLogin.bind(this);
+    this.signUp = this.signUp.bind(this);
   }
   //------------------------------------------------------------------
   async submitLogin() {
@@ -26,6 +27,10 @@ class Login extends React.Component {
         error: true,
       });
     }
+  }
+  //------------------------------------------------------------------
+  signUp() {
+    // this.props.navigate('SignUp');
   }
   //------------------------------------------------------------------
   render() {
@@ -47,6 +52,7 @@ class Login extends React.Component {
         />
         <View style={{ margin: 7 }} />
         <Text>{this.state.error ? 'Incorrect username or password' : ''}</Text>
+        <Button title="Sign Up" onPress={this.signUp} />
         <Button title="Submit" onPress={this.submitLogin} />
       </View>
     );
