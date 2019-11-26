@@ -11,9 +11,6 @@ import {
 // CONSTANTS
 //------------------------------------------------------------------
 class Hunts extends React.Component {
-  constructor() {
-    super()
-  }
   async componentDidMount() {
     await this.props.fetchAllHunts()
   }
