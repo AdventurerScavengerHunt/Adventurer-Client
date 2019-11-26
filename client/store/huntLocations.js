@@ -95,8 +95,8 @@ export default function(state = huntLocations, action) {
     case GET_HUNT_LOCATIONS:
       return action.gotHuntLocations;
     case UPDATE_VISITED_LOCATION: {
-      let currentLocations = [...state].slice(0); // Test if we need .slice(0) on this since spreading into new array should create copy
-      let visitedLocationId = action.locationId;
+      let currentLocations = [...state]
+      let visitedLocationId = action.locationId
       currentLocations = currentLocations.filter(location => {
         if (location.huntLocation.locationId === visitedLocationId) {
           location.huntLocation.visited = true;
