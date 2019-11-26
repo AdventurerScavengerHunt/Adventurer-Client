@@ -1,42 +1,42 @@
-import React from 'react';
-import { View, Button, StyleSheet } from 'react-native';
-import { connect } from 'react-redux'; // Leaving for use with existing game
+import React from 'react'
+import {View, Button, StyleSheet} from 'react-native'
+import {connect} from 'react-redux' // Leaving for use with existing game
 //------------------------------------------------------------------
-const NEW_GAME = 'NEW_GAME';
-const RESUME_GAME = 'RESUME_GAME';
+const NEW_GAME = 'NEW_GAME'
+const RESUME_GAME = 'RESUME_GAME'
 //------------------------------------------------------------------
 class StartScreen extends React.Component {
   constructor() {
-    super();
-    this.handleSelection = this.handleSelection.bind(this);
+    super()
+    this.handleSelection = this.handleSelection.bind(this)
   }
   //------------------------------------------------------------------
   handleSelection(inSelection) {
     if (inSelection === NEW_GAME) {
-      this.props.navigation.navigate('HuntScreen');
+      this.props.navigation.navigate('HuntScreen')
     } else if (inSelection === RESUME_GAME) {
-      this.props.navigation.navigate('MapScreen');
+      this.props.navigation.navigate('MapScreen')
     }
   }
   //------------------------------------------------------------------
   render() {
     return (
-      <View style={{ margin: 30 }}>
+      <View style={{margin: 30}}>
         <View>
           <Button
-            disabled={false}
             title="NEW GAME"
             onPress={() => this.handleSelection(NEW_GAME)}
           ></Button>
         </View>
         <View>
           <Button
+            disabled={false}
             title="RESUME"
             onPress={() => this.handleSelection(RESUME_GAME)}
           ></Button>
         </View>
       </View>
-    );
+    )
   }
 }
 //------------------------------------------------------------------
@@ -46,11 +46,11 @@ const styles = StyleSheet.create({
     margin: 100,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   errorMessageText: {
-    textDecorationColor: 'red',
-  },
-});
+    textDecorationColor: 'red'
+  }
+})
 
-export default StartScreen;
+export default StartScreen
