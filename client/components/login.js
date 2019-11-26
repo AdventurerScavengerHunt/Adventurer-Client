@@ -20,7 +20,7 @@ class Login extends React.Component {
   async submitLogin() {
     await this.props.login(this.state.email, this.state.password, LOGIN);
     if (this.props.user.id) {
-      this.props.navigate('MapScreen');
+      this.props.navigate('StartScreen');
     } else {
       this.setState({
         error: true,

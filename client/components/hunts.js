@@ -1,34 +1,29 @@
-import React from "react"
-import { Text, TextInput, View, Button, StyleSheet } from "react-native"
-import { connect } from "react-redux"
+import React from 'react';
+import { Text, TextInput, View, Button, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
 //------------------------------------------------------------------
-import MapScreen from "./map-screen"
-import { fetchAllHunts } from "../store/hunts"
-import { fetchCreatedHuntLocations } from "../store/huntLocations"
+import { fetchAllHunts } from '../store/hunts';
+import { fetchCreatedHuntLocations } from '../store/huntLocations';
 //------------------------------------------------------------------
 // CONSTANTS
 //------------------------------------------------------------------
 class Hunts extends React.Component {
   constructor() {
-    super()
-    this.state = {
-      huntSelected: false
-    }
+    super();
   }
   async componentDidMount() {
-    await this.props.fetchAllHunts()
+    await this.props.fetchAllHunts();
   }
   //------------------------------------------------------------------
   async handleSelectedHunt(huntId) {
     //Post to create hunts and put on state
-    await fetchCreatedHuntLocations(this.props.user.id, huntId)
-    this.setState({ huntSelected: true })
+    await fetchCreatedHuntLocations(this.props.user.id, huntId);
+    this.props.navigate('MapScreen');
   }
   //------------------------------------------------------------------
   render() {
-    const hunts = this.props.hunts
-    const mapScreen = <MapScreen />
-    const huntsScreen = (
+    const hunts = this.props.hunts;
+    return (
       <View style={{ margin: 50 }}>
         {hunts.map(hunt => (
           <View key={hunt.id}>
@@ -39,8 +34,7 @@ class Hunts extends React.Component {
           </View>
         ))}
       </View>
-    )
-    return this.state.huntSelected ? mapScreen : huntsScreen
+    );
   }
 }
 //------------------------------------------------------------------
@@ -48,31 +42,32 @@ class Hunts extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   errorMessageText: {
-    textDecorationColor: "red"
-  }
-})
+    textDecorationColor: 'red',
+  },
+});
 //------------------------------------------------------------------
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, ownProps) => {
   return {
     user: state.user,
-    hunts: state.hunts
-  }
-}
+    hunts: state.hunts,
+    navigate: ownProps.navigation.navigate,
+  };
+};
 //------------------------------------------------------------------
 
 const mapDispatchToProps = dispatch => {
   return {
     fetchAllHunts: () => dispatch(fetchAllHunts()),
     fetchCreatedHuntLocations: (userId, huntId) =>
-      dispatch(fetchCreatedHuntLocations(userId, huntId))
-  }
-}
+      dispatch(fetchCreatedHuntLocations(userId, huntId)),
+  };
+};
 //------------------------------------------------------------------
 
-export default connect(mapStateToProps, mapDispatchToProps)(Hunts)
+export default connect(mapStateToProps, mapDispatchToProps)(Hunts);
