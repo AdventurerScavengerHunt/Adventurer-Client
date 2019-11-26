@@ -1,49 +1,42 @@
-import React from "react"
-import { View, Button, StyleSheet } from "react-native"
-import { connect } from "react-redux" // Leaving for use with existing game
+import React from 'react';
+import { View, Button, StyleSheet } from 'react-native';
+import { connect } from 'react-redux'; // Leaving for use with existing game
 //------------------------------------------------------------------
-import MapScreen from "./map-screen"
-import Hunts from "./hunts"
-//------------------------------------------------------------------
-const NEW_GAME = "NEW_GAME"
-const RESUME_GAME = "RESUME_GAME"
+const NEW_GAME = 'NEW_GAME';
+const RESUME_GAME = 'RESUME_GAME';
 //------------------------------------------------------------------
 class StartScreen extends React.Component {
   constructor() {
-    super()
-    this.state = {
-      selection: ''
-    }
-    this.handleSelection = this.handleSelection.bind(this)
+    super();
+    this.handleSelection = this.handleSelection.bind(this);
   }
   //------------------------------------------------------------------
   handleSelection(inSelection) {
-    this.setState({
-      selection: inSelection
-    })
+    if (inSelection === NEW_GAME) {
+      this.props.navigation.navigate('HuntScreen');
+    } else if (inSelection === RESUME_GAME) {
+      this.props.navigation.navigate('MapScreen');
+    }
   }
   //------------------------------------------------------------------
   render() {
-    const huntsScreen = <Hunts />
-    const mapScreen = <MapScreen />
-    const startScreen = (
+    return (
       <View style={{ margin: 30 }}>
         <View>
           <Button
             disabled={false}
             title="NEW GAME"
-            onPress={()=>this.handleSelection(NEW_GAME)}
+            onPress={() => this.handleSelection(NEW_GAME)}
           ></Button>
         </View>
         <View>
-          <Button title="RESUME" onPress={()=>this.handleSelection(RESUME_GAME)}></Button>
+          <Button
+            title="RESUME"
+            onPress={() => this.handleSelection(RESUME_GAME)}
+          ></Button>
         </View>
       </View>
-    )
-
-    if(this.state.selection=='') return startScreen
-    else if(this.state.selection == NEW_GAME) return huntsScreen
-    else if(this.state.selection == RESUME_GAME) return mapScreen
+    );
   }
 }
 //------------------------------------------------------------------
@@ -51,13 +44,13 @@ class StartScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     margin: 100,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   errorMessageText: {
-    textDecorationColor: "red"
-  }
-})
+    textDecorationColor: 'red',
+  },
+});
 
-export default StartScreen
+export default StartScreen;

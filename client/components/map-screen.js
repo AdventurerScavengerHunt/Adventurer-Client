@@ -20,6 +20,7 @@ import { coordDist } from '../../coordinate-logic';
 //------------------------------------------------------------------
 const LATITUDE_DELTA = 0.00922;
 const LONGITUDE_DELTA = 0.00421;
+let locationTracking;
 //------------------------------------------------------------------
 class MapScreen extends Component {
   //------------------------------------------------------------------
@@ -47,9 +48,13 @@ class MapScreen extends Component {
       });
     }
     //-------SET LOCATION TRACKING------------------------------------------
-    setInterval(this.updatePosition, 2000);
+    locationTracking = setInterval(this.updatePosition, 2000);
     //---------------------HUNTS---------------------------------------------
     this.props.fetchHuntLocations(this.props.user.id);
+  }
+  //------------------------------------------------------------------
+  componentWillUnmount() {
+    clearInterval(locationTracking);
   }
   //------------------------------------------------------------------
   handleFound(targetLat, targetLong) {
@@ -84,8 +89,8 @@ class MapScreen extends Component {
           return { level: prevState.level + 1 };
         });
       } else if (levelsToComplete === 0) {
-        console.log('yay');
-        //display "You win!" and redirect to start screen
+        console.log(this.props);
+        this.props.navigate('StartScreen');
       }
     }
   }
@@ -225,10 +230,11 @@ const styles = StyleSheet.create({
   },
 });
 //------------------------------------------------------------------
-const mapStateToProps = state => {
+const mapStateToProps = (state, ownProps) => {
   return {
     huntLocations: state.huntLocations,
     user: state.user,
+    navigate: ownProps.navigation.navigate,
   };
 };
 //------------------------------------------------------------------
