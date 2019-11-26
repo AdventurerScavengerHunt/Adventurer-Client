@@ -21,7 +21,7 @@ import {coordDist} from '../../coordinate-logic'
 //------------------------------------------------------------------
 const LATITUDE_DELTA = 0.00922
 const LONGITUDE_DELTA = 0.00421
-let unmounted = false
+let mounted = true
 //------------------------------------------------------------------
 class MapScreen extends Component {
   //------------------------------------------------------------------
@@ -108,7 +108,7 @@ class MapScreen extends Component {
   updatePosition() {
     navigator.geolocation.getCurrentPosition(
       position => {
-        if (!unmounted) {
+        if (mounted) {
           this.setState({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
@@ -123,7 +123,7 @@ class MapScreen extends Component {
   }
   //------------------------------------------------------------------
   componentWillUnmount() {
-    unmounted = true
+    mounted = false
     clearInterval(this.locationTracking)
   }
   //------------------------------------------------------------------
