@@ -8,14 +8,20 @@ const RESUME_GAME = 'RESUME_GAME'
 class StartScreen extends React.Component {
   constructor() {
     super()
+    this.state = {hasPreviousGame: false}
     this.handleSelection = this.handleSelection.bind(this)
+  }
+  componentDidMount() {
+    if (this.props.user.huntId === null) {
+      this.setState({hasPreviousGame: true})
+    }
   }
   //------------------------------------------------------------------
   handleSelection(inSelection) {
     if (inSelection === NEW_GAME) {
-      this.props.navigation.navigate('HuntScreen')
+      this.props.navigate('HuntScreen')
     } else if (inSelection === RESUME_GAME) {
-      this.props.navigation.navigate('MapScreen')
+      this.props.navigate('MapScreen')
     }
   }
   //------------------------------------------------------------------
@@ -30,7 +36,7 @@ class StartScreen extends React.Component {
         </View>
         <View>
           <Button
-            disabled={false}
+            disabled={this.state.hasPreviousGame}
             title="RESUME"
             onPress={() => this.handleSelection(RESUME_GAME)}
           ></Button>
@@ -53,4 +59,14 @@ const styles = StyleSheet.create({
   }
 })
 
-export default StartScreen
+//------------------------------------------------------------------
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    user: state.user,
+    navigate: ownProps.navigation.navigate
+  }
+}
+//------------------------------------------------------------------
+
+export default connect(mapStateToProps)(StartScreen)

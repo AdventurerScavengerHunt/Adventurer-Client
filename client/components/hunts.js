@@ -3,7 +3,10 @@ import {Text, TextInput, View, Button, StyleSheet} from 'react-native'
 import {connect} from 'react-redux'
 //------------------------------------------------------------------
 import {fetchAllHunts} from '../store/hunts'
-import {fetchCreatedHuntLocations, fetchDroppingHuntLocations} from '../store/huntLocations'
+import {
+  fetchCreatedHuntLocations,
+  fetchDroppingHuntLocations
+} from '../store/huntLocations'
 //------------------------------------------------------------------
 // CONSTANTS
 //------------------------------------------------------------------
@@ -17,7 +20,7 @@ class Hunts extends React.Component {
   //------------------------------------------------------------------
   async handleSelectedHunt(huntId) {
     //Drops any old hunts for user
-    await this.props.fetchDropLocations(this.props.user.id)
+    await this.props.fetchDropHuntLocations(this.props.user.id)
     //Post to create hunts and put on state
     await this.props.fetchCreatedHuntLocations(this.props.user.id, huntId)
     this.props.navigate('MapScreen')
@@ -67,10 +70,10 @@ const mapDispatchToProps = dispatch => {
   return {
     fetchAllHunts: () => dispatch(fetchAllHunts()),
     fetchCreatedHuntLocations: (userId, huntId) =>
-      dispatch(fetchCreatedHuntLocations(userId, huntId)),   fetchDropHuntLocations: (userId, huntId) =>
+      dispatch(fetchCreatedHuntLocations(userId, huntId)),
+    fetchDropHuntLocations: (userId, huntId) =>
       dispatch(fetchDroppingHuntLocations(userId, huntId))
-  },
-
+  }
 }
 //------------------------------------------------------------------
 
