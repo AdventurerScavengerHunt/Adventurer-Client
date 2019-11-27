@@ -41,7 +41,7 @@ class MapScreen extends Component {
     }
     this.handleFound = this.handleFound.bind(this)
     this.updatePosition = this.updatePosition.bind(this)
-    this.quit = this.quit.bind(this)
+    this.backToStart = this.backToStart.bind(this)
   }
   //----------------FUNCTIONS--------------------------------------
   async componentDidMount() {
@@ -98,7 +98,7 @@ class MapScreen extends Component {
         this.setState(prevState => {
           return {level: prevState.level + 1}
         })
-      } else if (levelsToComplete === 0) {
+      } else if (levelsToComplete <= 0) {
         this.setState({won: true})
         await this.props.fetchDropLocations(this.props.user.id)
         setTimeout(() => {
@@ -124,13 +124,8 @@ class MapScreen extends Component {
     )
   }
   //------------------------------------------------------------------
-  async quit(title) {
-    if (title === 'QUIT') {
-      await this.props.fetchDropLocations(this.props.user.id)
-      this.props.navigate('StartScreen')
-    } else {
-      this.props.navigate('StartScreen')
-    }
+  backToStart() {
+    this.props.navigate('StartScreen')
   }
   //------------------------------------------------------------------
   componentWillUnmount() {
@@ -203,21 +198,20 @@ class MapScreen extends Component {
             ) : (
               <Text>Keep searchin'!</Text>
             )}
-            <Button
-              title="FOUND"
-              onPress={() =>
-                this.handleFound(
-                  huntMarkers[level].latitude,
-                  huntMarkers[level].longitude
-                )
-              }
-            />
             {this.locationTracking && (
               <View>
-                <Button title="QUIT" onPress={() => this.quit('QUIT')} />
                 <Button
-                  title="SAVE AND QUIT"
-                  onPress={() => this.quit('SAVE AND QUIT')}
+                  title="FOUND"
+                  onPress={() =>
+                    this.handleFound(
+                      huntMarkers[level].latitude,
+                      huntMarkers[level].longitude
+                    )
+                  }
+                />
+                <Button
+                  title="BACK TO START SCREEN"
+                  onPress={() => this.backToStart()}
                 />
               </View>
             )}
