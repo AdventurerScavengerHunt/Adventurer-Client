@@ -45,6 +45,7 @@ class MapScreen extends Component {
   }
   //----------------FUNCTIONS--------------------------------------
   async componentDidMount() {
+    console.log('map mounting')
     //-------------------LOCATION PERMISSIONS-------------------------------
 
     const {status} = await Permissions.askAsync(Permissions.LOCATION)
@@ -63,7 +64,8 @@ class MapScreen extends Component {
     ).length
 
     this.setState({
-      score: initialScore
+      score: initialScore,
+      level: initialScore
     })
   }
   //------------------------------------------------------------------
@@ -103,7 +105,7 @@ class MapScreen extends Component {
         await this.props.fetchDropLocations(this.props.user.id)
         setTimeout(() => {
           this.props.navigate('StartScreen')
-        }, 10000)
+        }, 4000)
       }
     }
   }
@@ -118,6 +120,7 @@ class MapScreen extends Component {
         }
       },
       error => {
+        console.log('update position error')
         console.log('error: ', error)
       },
       {enableHighAccuracy: true, timeout: 2000, maximumAge: 0}
@@ -129,6 +132,7 @@ class MapScreen extends Component {
   }
   //------------------------------------------------------------------
   componentWillUnmount() {
+    console.log('map unmounting')
     mounted = false
     clearInterval(this.locationTracking)
   }
