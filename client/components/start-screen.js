@@ -7,6 +7,9 @@ const NEW_GAME = 'NEW_GAME'
 const RESUME_GAME = 'RESUME_GAME'
 //------------------------------------------------------------------
 class StartScreen extends React.Component {
+  static navigationOptions = {
+    headerLeft: null
+  }
   constructor() {
     super()
     this.state = {hasNoPreviousGame: false}
