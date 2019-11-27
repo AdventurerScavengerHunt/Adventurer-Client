@@ -41,6 +41,7 @@ class MapScreen extends Component {
     }
     this.handleFound = this.handleFound.bind(this)
     this.updatePosition = this.updatePosition.bind(this)
+    this.quit = this.quit.bind(this)
   }
   //----------------FUNCTIONS--------------------------------------
   async componentDidMount() {
@@ -53,6 +54,7 @@ class MapScreen extends Component {
       })
     }
     //-------SET LOCATION TRACKING------------------------------------------
+    mounted = true
     this.locationTracking = setInterval(this.updatePosition, 2000)
     //---------------------HUNTS---------------------------------------------
     await this.props.fetchHuntLocations(this.props.user.id)
@@ -120,6 +122,15 @@ class MapScreen extends Component {
       },
       {enableHighAccuracy: true, timeout: 2000, maximumAge: 0}
     )
+  }
+  //------------------------------------------------------------------
+  async quit(title) {
+    if (title === 'QUIT') {
+      await this.props.fetchDropLocations(this.props.user.id)
+      this.props.navigate('StartScreen')
+    } else {
+      this.props.navigate('StartScreen')
+    }
   }
   //------------------------------------------------------------------
   componentWillUnmount() {
@@ -201,6 +212,15 @@ class MapScreen extends Component {
                 )
               }
             />
+            {this.locationTracking && (
+              <View>
+                <Button title="QUIT" onPress={() => this.quit('QUIT')} />
+                <Button
+                  title="SAVE AND QUIT"
+                  onPress={() => this.quit('SAVE AND QUIT')}
+                />
+              </View>
+            )}
           </View>
         )}
       </SafeAreaView>

@@ -1,6 +1,7 @@
 import React from 'react'
 import {View, Button, StyleSheet} from 'react-native'
 import {connect} from 'react-redux' // Leaving for use with existing game
+import {me} from '../store/user'
 //------------------------------------------------------------------
 const NEW_GAME = 'NEW_GAME'
 const RESUME_GAME = 'RESUME_GAME'
@@ -11,7 +12,8 @@ class StartScreen extends React.Component {
     this.state = {hasNoPreviousGame: false}
     this.handleSelection = this.handleSelection.bind(this)
   }
-  componentDidMount() {
+  async componentDidMount() {
+    await this.props.getUser()
     if (this.props.user.huntId === null) {
       this.setState({hasNoPreviousGame: true})
     }
@@ -67,6 +69,12 @@ const mapStateToProps = (state, ownProps) => {
     navigate: ownProps.navigation.navigate
   }
 }
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getUser: () => dispatch(me())
+  }
+}
 //------------------------------------------------------------------
 
-export default connect(mapStateToProps)(StartScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(StartScreen)
