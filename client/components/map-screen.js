@@ -19,9 +19,11 @@ import {
 } from '../store/huntLocations'
 import {coordDist} from '../../coordinate-logic'
 //------------------------------------------------------------------
+//classifies if component is currently mounted
+let mounted = true
+//determines default zoom for map
 const LATITUDE_DELTA = 0.00922
 const LONGITUDE_DELTA = 0.00421
-let mounted = true
 //------------------------------------------------------------------
 class MapScreen extends Component {
   //------------------------------------------------------------------
@@ -57,7 +59,7 @@ class MapScreen extends Component {
     //-------SET LOCATION TRACKING------------------------------------------
     mounted = true
     this.locationTracking = setInterval(this.updatePosition, 2000)
-    //---------------------HUNTS---------------------------------------------
+    //-------------------HUNTS---------------------------------------------
     await this.props.fetchHuntLocations(this.props.user.id)
     let initialScore = this.props.huntLocations.filter(
       loc => loc.huntLocation.visited
@@ -70,12 +72,9 @@ class MapScreen extends Component {
   }
   //------------------------------------------------------------------
   async handleFound(targetLat, targetLong) {
-    //Math to compare target and current coordinates
-    //Make sure not moving past number of levels
-
     //variable declarations
-    let huntMarkers = this.props.huntLocations
-    let huntLocId = huntMarkers[this.state.level].huntLocation.locationId
+    let huntLocs = this.props.huntLocations
+    let huntLocId = huntLocs[this.state.level].huntLocation.locationId
     let withinDistance =
       coordDist(
         this.state.latitude,
@@ -83,11 +82,11 @@ class MapScreen extends Component {
         targetLat,
         targetLong
       ) < 5000
-    let levelsToComplete =
-      this.props.huntLocations.length - 1 - this.state.level
+    let levelsToComplete = this.props.huntLocations.length - this.state.level
 
     //conditional logic
     if (withinDistance) {
+      levelsToComplete--
       //update visited to "true" for this location
       await this.props.fetchVisitLocation(this.props.user.id, huntLocId)
       //increment score
@@ -100,7 +99,7 @@ class MapScreen extends Component {
         this.setState(prevState => {
           return {level: prevState.level + 1}
         })
-      } else if (levelsToComplete <= 0) {
+      } else {
         this.setState({won: true})
         await this.props.fetchDropLocations(this.props.user.id)
         setTimeout(() => {
@@ -109,6 +108,7 @@ class MapScreen extends Component {
       }
     }
   }
+  //------------------------------------------------------------------
   updatePosition() {
     navigator.geolocation.getCurrentPosition(
       position => {
@@ -168,12 +168,11 @@ class MapScreen extends Component {
                 })}
           </MapView>
         </View>
-        {/* Database hunt location info */}
-        {this.props.huntLocations[0] && (
+        {huntMarkers[0] && (
           <View style={styles.scoreBlock}>
             <Text style={styles.scoreText}>Score</Text>
             <Text style={styles.scoreText}>
-              {this.state.score} / {this.props.huntLocations.length}
+              {this.state.score} / {huntMarkers.length}
             </Text>
           </View>
         )}
@@ -182,7 +181,7 @@ class MapScreen extends Component {
             <Text>YOU WIN!!!!!!!!!</Text>
           </View>
         )}
-        {this.props.huntLocations[0] && (
+        {huntMarkers[0] && (
           <View>
             <Text>{huntMarkers[level].riddle}</Text>
             <Text>
