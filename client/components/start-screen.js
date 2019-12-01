@@ -1,6 +1,6 @@
 import React from 'react'
 import {View, Button, StyleSheet} from 'react-native'
-import {connect} from 'react-redux' // Leaving for use with existing game
+import {connect} from 'react-redux'
 import {me} from '../store/user'
 import {withNavigationFocus} from 'react-navigation'
 //------------------------------------------------------------------
@@ -13,14 +13,14 @@ class StartScreen extends React.Component {
   }
   constructor() {
     super()
-    this.state = {hasNoPreviousGame: false}
+    this.state = {hasNoPreviousGame: true}
     this.handleSelection = this.handleSelection.bind(this)
   }
   async componentDidMount() {
     await this.props.getUser()
-    //will disable resume button if the user has no game to resume
-    if (this.props.user.huntId === null) {
-      this.setState({hasNoPreviousGame: true})
+    //will enable resume button if the user has a game to resume
+    if (this.props.user.huntId) {
+      this.setState({hasNoPreviousGame: false})
     }
   }
   async componentDidUpdate(prevProps) {
