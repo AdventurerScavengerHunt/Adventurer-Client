@@ -1,23 +1,47 @@
 import React from 'react'
 import {View, Button, StyleSheet} from 'react-native'
-import {connect} from 'react-redux' // Leaving for use with existing game
+import {connect} from 'react-redux'
+import {me} from '../store/user'
+import {withNavigationFocus} from 'react-navigation'
 //------------------------------------------------------------------
 const NEW_GAME = 'NEW_GAME'
 const RESUME_GAME = 'RESUME_GAME'
 //------------------------------------------------------------------
 class StartScreen extends React.Component {
+  static navigationOptions = {
+    headerLeft: null
+  }
   constructor() {
     super()
-    this.state = {hasNoPreviousGame: false}
+    this.state = {hasNoPreviousGame: true}
     this.handleSelection = this.handleSelection.bind(this)
   }
-  componentDidMount() {
-    if (this.props.user.huntId === null) {
-      this.setState({hasNoPreviousGame: true})
+  async componentDidMount() {
+    await this.props.getUser()
+    //will enable resume button if the user has a game to resume
+    if (this.props.user.huntId) {
+      this.setState({hasNoPreviousGame: false})
+    }
+  }
+  async componentDidUpdate(prevProps) {
+    //checks if navigation changed from unfocused to focused
+    //meaning we have returned to the screen from another screen
+    if (prevProps.isFocused !== this.props.isFocused && this.props.isFocused) {
+      //if so, get user again and enable/disable resume button
+      //based on huntId value
+      await this.props.getUser()
+      if (this.props.user.huntId === null) {
+        this.setState({hasNoPreviousGame: true})
+      } else {
+        this.setState({hasNoPreviousGame: false})
+      }
     }
   }
   //------------------------------------------------------------------
   handleSelection(inSelection) {
+    //disable resume button whenever leaving page,
+    //so it will never start enabled when returning
+    this.setState({hasNoPreviousGame: true})
     if (inSelection === NEW_GAME) {
       this.props.navigate('HuntScreen')
     } else if (inSelection === RESUME_GAME) {
@@ -67,6 +91,15 @@ const mapStateToProps = (state, ownProps) => {
     navigate: ownProps.navigation.navigate
   }
 }
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getUser: () => dispatch(me())
+  }
+}
 //------------------------------------------------------------------
 
-export default connect(mapStateToProps)(StartScreen)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withNavigationFocus(StartScreen))

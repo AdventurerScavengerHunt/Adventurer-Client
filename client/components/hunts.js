@@ -8,8 +8,6 @@ import {
   fetchDroppingHuntLocations
 } from '../store/huntLocations'
 //------------------------------------------------------------------
-// CONSTANTS
-//------------------------------------------------------------------
 class Hunts extends React.Component {
   async componentDidMount() {
     await this.props.fetchAllHunts()
@@ -17,7 +15,7 @@ class Hunts extends React.Component {
   //------------------------------------------------------------------
   async handleSelectedHunt(huntId) {
     //Drops any old hunts for user
-    await this.props.fetchDropHuntLocations(this.props.user.id)
+    await this.props.fetchDroppingHuntLocations(this.props.user.id)
     //Post to create hunts and put on state
     await this.props.fetchCreatedHuntLocations(this.props.user.id, huntId)
     this.props.navigate('MapScreen')
@@ -68,7 +66,7 @@ const mapDispatchToProps = dispatch => {
     fetchAllHunts: () => dispatch(fetchAllHunts()),
     fetchCreatedHuntLocations: (userId, huntId) =>
       dispatch(fetchCreatedHuntLocations(userId, huntId)),
-    fetchDropHuntLocations: (userId, huntId) =>
+    fetchDroppingHuntLocations: (userId, huntId) =>
       dispatch(fetchDroppingHuntLocations(userId, huntId))
   }
 }
