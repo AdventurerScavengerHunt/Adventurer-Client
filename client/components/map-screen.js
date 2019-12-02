@@ -1,12 +1,5 @@
 import React, {Component} from 'react'
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  Button,
-  Text,
-  SafeAreaView
-} from 'react-native'
+import {View, Button, Text, SafeAreaView} from 'react-native'
 import MapView, {Marker} from 'react-native-maps'
 import * as Permissions from 'expo-permissions'
 import * as Location from 'expo-location'
@@ -18,6 +11,7 @@ import {
   fetchDroppingHuntLocations
 } from '../store/huntLocations'
 import {coordDist} from '../../coordinate-logic'
+import {styles} from '../styles'
 //------------------------------------------------------------------
 //classifies if component is currently mounted
 let mounted = true
@@ -170,19 +164,19 @@ class MapScreen extends Component {
         </View>
         {huntMarkers[0] && (
           <View style={styles.scoreBlock}>
-            <Text style={styles.scoreText}>Score</Text>
-            <Text style={styles.scoreText}>
+            <Text style={styles.redBoxText}>Score</Text>
+            <Text style={styles.redBoxText}>
               {this.state.score} / {huntMarkers.length}
             </Text>
           </View>
         )}
         {this.state.won && (
-          <View>
-            <Text>YOU WIN!!!!!!!!!</Text>
+          <View style={styles.winMessage}>
+            <Text style={styles.redBoxText}>YOU WIN!!!!!!!!!</Text>
           </View>
         )}
         {huntMarkers[0] && (
-          <View>
+          <View style={styles.textWindow}>
             <Text>{huntMarkers[level].riddle}</Text>
             <Text>
               TARGET: {huntMarkers[level].latitude} :{' '}
@@ -201,7 +195,7 @@ class MapScreen extends Component {
             ) : (
               <Text>Keep searchin'!</Text>
             )}
-            {this.locationTracking && (
+            {this.locationTracking ? (
               <View>
                 <Button
                   title="FOUND"
@@ -217,6 +211,8 @@ class MapScreen extends Component {
                   onPress={() => this.backToStart()}
                 />
               </View>
+            ) : (
+              <Text>Loading...</Text>
             )}
           </View>
         )}
@@ -224,55 +220,6 @@ class MapScreen extends Component {
     )
   }
 }
-//------------------------------------------------------------------
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  mapStyle: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height
-  },
-  userLocMarker: {
-    backgroundColor: 'blue',
-    borderColor: 'lightblue',
-    borderWidth: 2,
-    padding: 3,
-    borderRadius: 100
-  },
-  huntLocMarker: {
-    backgroundColor: 'red',
-    borderColor: 'pink',
-    borderWidth: 2,
-    padding: 5,
-    borderRadius: 50
-  },
-  scoreBlock: {
-    backgroundColor: 'rgba(165, 42, 42, 0.7)',
-    padding: 5,
-    borderRadius: 20,
-    alignItems: 'center',
-    position: 'absolute',
-    top: '5%',
-    left: '5%'
-  },
-  scoreText: {
-    color: 'goldenrod'
-  },
-  testWindow: {
-    backgroundColor: 'gray',
-    position: 'absolute',
-    top: '10%'
-  },
-  riddle: {
-    backgroundColor: 'gray',
-    position: 'absolute',
-    top: '90%'
-  }
-})
 //------------------------------------------------------------------
 const mapStateToProps = (state, ownProps) => {
   return {
