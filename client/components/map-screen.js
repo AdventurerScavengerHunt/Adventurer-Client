@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {View, Button, Text, SafeAreaView} from 'react-native'
+import {View, Button, Text, SafeAreaView, Image} from 'react-native'
 import MapView, {Marker} from 'react-native-maps'
 import * as Permissions from 'expo-permissions'
 import * as Location from 'expo-location'
@@ -18,6 +18,8 @@ let mounted = true
 //determines default zoom for map
 const LATITUDE_DELTA = 0.00922
 const LONGITUDE_DELTA = 0.00421
+//sets minimum distance user needs to be from hunt location marker
+let minDist = 500
 //------------------------------------------------------------------
 class MapScreen extends Component {
   //------------------------------------------------------------------
@@ -75,7 +77,7 @@ class MapScreen extends Component {
         this.state.longitude,
         targetLat,
         targetLong
-      ) < 5000
+      ) < minDist
     let levelsToComplete = this.props.huntLocations.length - this.state.level
 
     //conditional logic
@@ -126,12 +128,12 @@ class MapScreen extends Component {
   }
   //------------------------------------------------------------------
   componentWillUnmount() {
-    console.log('map unmounting')
     mounted = false
     clearInterval(this.locationTracking)
   }
   //------------------------------------------------------------------
   render() {
+    let huntMarker = this.props.huntLocations[this.state.score]
     let huntMarkers = this.props.huntLocations
     let userLoc = {
       latitude: this.state.latitude,
@@ -146,22 +148,37 @@ class MapScreen extends Component {
             <Marker coordinate={userLoc}>
               <View style={styles.userLocMarker} />
             </Marker>
-            {/* Testing database hunt location markers */}
-            {!huntMarkers
-              ? null
-              : huntMarkers.map(marker => {
-                  const coords = {
-                    latitude: parseFloat(marker.latitude),
-                    longitude: parseFloat(marker.longitude)
-                  }
-                  return (
-                    <Marker key={marker.id} coordinate={coords}>
-                      <View style={styles.huntLocMarker} />
-                    </Marker>
+            {/* Database hunt location marker */}
+            {!huntMarker ||
+            coordDist(
+              userLoc.latitude,
+              userLoc.longitude,
+              parseFloat(huntMarker.latitude),
+              parseFloat(huntMarker.longitude)
+            ) > minDist ? null : (
+              <Marker
+                key={huntMarker.id}
+                coordinate={{latitude: parseFloat(huntMarker.latitude), longitude:
+                  parseFloat(huntMarker.longitude)}}
+                onPress={() =>
+                  this.handleFound(
+                    parseFloat(huntMarker.latitude),
+                    parseFloat(huntMarker.longitude)
                   )
-                })}
+                }
+              >
+                <Image
+                  source={{
+                    uri:
+                      'http://www.i2clipart.com/cliparts/3/9/a/2/clipart-treasure-chest-39a2.png'
+                  }}
+                  style={styles.huntLocMarker}
+                />
+              </Marker>
+            )}
           </MapView>
         </View>
+        {/* Score block based on level */}
         {huntMarkers[0] && (
           <View style={styles.scoreBlock}>
             <Text style={styles.redBoxText}>Score</Text>
@@ -178,7 +195,8 @@ class MapScreen extends Component {
         {huntMarkers[0] && (
           <View style={styles.textWindow}>
             <Text>{huntMarkers[level].riddle}</Text>
-            <Text>
+            {/* TESTING PARAMETERS */}
+            {/* <Text>
               TARGET: {huntMarkers[level].latitude} :{' '}
               {huntMarkers[level].longitude}
             </Text>
@@ -190,22 +208,19 @@ class MapScreen extends Component {
               this.state.longitude,
               huntMarkers[level].latitude,
               huntMarkers[level].longitude
-            ) < 5000 ? (
+            ) < minDist ? (
               <Text>Ya found me!</Text>
             ) : (
-              <Text>Keep searchin'!</Text>
-            )}
+              <Text>Keep searchin'! I'm {coordDist(
+                this.state.latitude,
+                this.state.longitude,
+                huntMarkers[level].latitude,
+                huntMarkers[level].longitude
+              )} feet away!</Text>
+            )} */}
+            {/* Back Button Selection */}
             {this.locationTracking ? (
               <View>
-                <Button
-                  title="FOUND"
-                  onPress={() =>
-                    this.handleFound(
-                      huntMarkers[level].latitude,
-                      huntMarkers[level].longitude
-                    )
-                  }
-                />
                 <Button
                   title="BACK TO START SCREEN"
                   onPress={() => this.backToStart()}
